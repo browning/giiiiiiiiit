@@ -161,9 +161,9 @@ namespace ghcontest
         class PopCount
         {
             public int repo;
-            public int pop;
+            public double pop;
 
-            public PopCount(int r, int p)
+            public PopCount(int r, double p)
             {
                 repo = r;
                 pop = p;
@@ -181,8 +181,6 @@ namespace ghcontest
             // follow parents
             foreach (int x in user_store[user].following)
             {
-		if( user_store[user].following.Count > 20 )
-			break;
 
                 if (repo_store[x].parent != -1 && !user_store[user].following.Contains(repo_store[x].parent) && 
                     !parents_choosen.Contains(repo_store[x].parent))
@@ -242,6 +240,19 @@ namespace ghcontest
                     }
                 }
             }
+
+	    foreach(PopCount pppp in pops)
+	    {
+		try
+		{
+		    pppp.pop = pppp.pop / (repo_store[pppp.repo].followers.Count * 1.0);
+	
+	   	}
+		catch(Exception)
+		{
+			pppp.pop = 0;
+		}
+	    }
             Array.Sort(pops, delegate(PopCount r1, PopCount r2)
             {
                 if (r1 == null && r2 == null)
