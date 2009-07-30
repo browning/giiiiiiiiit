@@ -36,6 +36,16 @@ namespace ghcontest
                followers = new List<int>();
                languages = new List<LanguageStat>();
            }
+
+           public bool containsLang(string lang)
+           {
+               foreach (LanguageStat ls in languages)
+               {
+                   if (ls.language_name == lang)
+                       return true;
+               }
+               return false;
+           }
         }
 
         class Person
@@ -146,10 +156,112 @@ namespace ghcontest
             sr.Close();
         }
 
+        class PopCount
+        {
+            public int repo;
+            public int pop;
+
+            public PopCount(int r, int p)
+            {
+                repo = r;
+                pop = p;
+            }
+        }
+
         public static string predict(int user)
         {
             string output = user + ":";
             int num = 0;
+            List<int> parents_choosen = new List<int>();
+            List<int> parents_parents_choosen = new List<int>();
+
+
+            // follow parents
+            foreach (int x in user_store[user].following)
+            {
+                if (repo_store[x].parent != -1 && !user_store[user].following.Contains(repo_store[x].parent) && 
+                    !parents_choosen.Contains(repo_store[x].parent))
+                {
+                    num++;
+                    parents_choosen.Add(repo_store[x].parent);
+                    output += repo_store[x].parent;
+                    if (num < 10)
+                        output += ",";
+                    if (num == 8)
+                    {
+                        break;
+                    }
+                    if (num == 10)
+                    {
+                        return output;
+                    }
+                }
+            }
+
+            // follow parents of parents
+            foreach (int x in parents_choosen)
+            {
+                if (repo_store[x].parent != -1 && !user_store[user].following.Contains(repo_store[x].parent) &&
+                    !parents_parents_choosen.Contains(repo_store[x].parent))
+                {
+                    num++;
+                    parents_parents_choosen.Add(repo_store[x].parent);
+                    output += repo_store[x].parent;
+                    if (num < 10)
+                        output += ",";
+                    if (num == 10)
+                    {
+                        return output;
+                    }
+                }
+            }
+            
+            // follow popular amongst followers of followed ??? !
+            PopCount[] pops = new PopCount[repo_store.Length];
+            for(int q=0; q<pops.Length; q++)
+            {
+                pops[q] = new PopCount(q, 0);
+            }
+            for (int w = 0; w < user_store[user].following.Count; w++)
+            {
+                if (repo_store[user_store[user].following[w]].followers.Count > 15)
+                    continue;
+                for (int x = 0; x < repo_store[user_store[user].following[w]].followers.Count; x++)
+                {
+                    Person peep = user_store[ repo_store[user_store[user].following[w]].followers[x] ];
+                    for (int y = 0; y < peep.following.Count; y++)
+                    {
+                        pops[peep.following[y]].pop++;
+                    }
+                }
+            }
+            Array.Sort(pops, delegate(PopCount r1, PopCount r2)
+            {
+                if (r1 == null && r2 == null)
+                    return 0;
+                if (r1 == null)
+                    return 1;
+                if (r2 == null)
+                    return -1;
+                return r2.pop.CompareTo(r1.pop);
+            });
+
+            foreach (PopCount popp in pops)
+            {
+                if (!user_store[user].following.Contains(popp.repo))
+                {
+                    num++;
+                    output += popp.repo;
+                    if (num < 10)
+                        output += ",";
+                    if (num == 10)
+                        return output;
+                }
+            }
+
+
+      
+            // follow popular
             foreach( Repo r in popular_repos)
             {
                 if (!user_store[user].following.Contains(r.id))
