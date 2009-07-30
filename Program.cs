@@ -181,6 +181,9 @@ namespace ghcontest
             // follow parents
             foreach (int x in user_store[user].following)
             {
+		if( user_store[user].following.Count > 20 )
+			break;
+
                 if (repo_store[x].parent != -1 && !user_store[user].following.Contains(repo_store[x].parent) && 
                     !parents_choosen.Contains(repo_store[x].parent))
                 {
