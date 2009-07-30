@@ -187,7 +187,7 @@ namespace ghcontest
                     output += repo_store[x].parent;
                     if (num < 10)
                         output += ",";
-                    if (num == 8)
+                    if (num == 5)
                     {
                         break;
                     }
@@ -213,6 +213,10 @@ namespace ghcontest
                     {
                         return output;
                     }
+                    if (num == 8)
+                    {
+                        break;
+                    }
                 }
             }
             
@@ -224,8 +228,6 @@ namespace ghcontest
             }
             for (int w = 0; w < user_store[user].following.Count; w++)
             {
-                if (repo_store[user_store[user].following[w]].followers.Count > 15)
-                    continue;
                 for (int x = 0; x < repo_store[user_store[user].following[w]].followers.Count; x++)
                 {
                     Person peep = user_store[ repo_store[user_store[user].following[w]].followers[x] ];
