@@ -202,7 +202,8 @@ namespace ghcontest
             }
 
             // follow parents of parents
-            foreach (int x in parents_choosen)
+            /*
+	    foreach (int x in parents_choosen)
             {
                 if (repo_store[x].parent != -1 && !user_store[user].following.Contains(repo_store[x].parent) &&
                     !parents_parents_choosen.Contains(repo_store[x].parent))
@@ -222,7 +223,7 @@ namespace ghcontest
                     }
                 }
             }
-            
+            */
             // follow popular amongst followers of followed ??? !
             PopCount[] pops = new PopCount[repo_store.Length];
             for(int q=0; q<pops.Length; q++)
@@ -241,18 +242,6 @@ namespace ghcontest
                 }
             }
 
-	    foreach(PopCount pppp in pops)
-	    {
-		try
-		{
-		    pppp.pop = pppp.pop / (repo_store[pppp.repo].followers.Count * 1.0);
-	
-	   	}
-		catch(Exception)
-		{
-			pppp.pop = 0;
-		}
-	    }
             Array.Sort(pops, delegate(PopCount r1, PopCount r2)
             {
                 if (r1 == null && r2 == null)
